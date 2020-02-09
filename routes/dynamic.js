@@ -1,40 +1,55 @@
 'use strict';
 
-// 3d party dependencies
+
+/**
+ * express module
+ * @const
+ */
 const express = require('express');
+
+/**
+ * Express router to mount user related functions on.
+ * @type {object}
+ * @const
+ * @namespace usersRouter
+ */
+
 const router = express.Router();
 
+// modules 
+const categories = require('../models/categories/categories-model.js');
+const products = require('../models/products/products-model.js');
 
-//require models here for example:
-// const categories = require('../models/categories/categories-model.js');
 
 
+// url: https://webapplog.com/url-parameters-and-routing-in-express-js/
+router.param('model' , getModel);
 
-// dynamic routes function 
 function getModel(req , res , next){
 
   let  model = req.params.model ;
   switch(model){
-  // case 'test':
-  //   req.model = categories ;
-  //   next();
-  //   return;
-  // example
-  // case 'products':
-  //   req.model = products;
-  //   next();
-  //   return ;
+  case 'categories':
+    console.log('categories');
+    req.model = categories ;
+    next();
+    return;
+  case 'products':
+    req.model = products;
+    next();
+    return ;
   default:
     next();
     return;        
   }
 }
 
-// pass the model to request params 
-router.param('model' , getModel);
-//
-
-// handlers 
+/**
+ * routes
+ * @param string
+ * @param function
+ * @returns {Response} 
+ */
 router.get('/api/v1/:model',getHandler);
 router.get('/api/v1/:model/:_id',getHandlerById);
 router.post('/api/v1/:model',postHandler);
@@ -42,25 +57,30 @@ router.put('/api/v1/:model/:_id',updateHandler);
 router.delete('/api/v1/:model/:_id',deleteHandler);
 
 
-// for get request 
 function getHandler(req , res , next){
+  try{
+    req.model.read()
+      .then(data => {
+        console.log(data);
+        res.status(200).json(data);
+      }).catch(next);
 
-  req.model.get()
-    .then(data => {
-      res.status(200).json(data);
-    }).catch(next);
+  }catch(e){
+    console.error(e);
+  }
+
 }
   
-// get request with an id
+  
 function getHandlerById(req , res , next){
   let id = req.params._id ;
-  req.model.get(id)
+  req.model.read(id)
     .then(data => {
       res.status(200).json(data);
     }).catch(next);
 }
   
-// post request take the value from the body
+  
 function postHandler(req , res , next){
   let value = req.body ;
   req.model.create(value)
@@ -69,11 +89,9 @@ function postHandler(req , res , next){
     })
     .catch(next);
 }
- 
-
-// put request take an id and the new value
+  
 function updateHandler(req , res , next){
-
+  
   let value = req.body ;
   let id = req.params._id ;
   req.model.update(id , value)
@@ -82,7 +100,7 @@ function updateHandler(req , res , next){
     });
 }
   
-// delete request send as post also
+  
 function deleteHandler(req , res , next){
   let id = req.params._id ;
   req.model.delete(id)
