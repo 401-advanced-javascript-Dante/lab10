@@ -8,7 +8,7 @@
 ### Links and Resources
 
 - [submission PR](https://github.com/401-advanced-javascript-Dante/lab10/pull/1)
-- [ci/cd](https://github.com/401-advanced-javascript-Dante/lab10/actions/runs/33979308) (GitHub Actions)
+- [ci/cd](https://github.com/401-advanced-javascript-Dante/lab10/actions/runs/36376090) (GitHub Actions)
 
 
 #### How to initialize/run your application (where applicable)
